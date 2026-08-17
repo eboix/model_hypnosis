@@ -11,8 +11,10 @@ scores align to drive a forced-choice answer with near certainty. The effect
 holds across model families and scales (including reasoning models) and the
 constructed prompts often transfer between models.
 
-An interactive explorer of every measured cell is linked from the paper (build
-it locally with `make explorer`).
+**[Interactive explorer »](https://eboix.github.io/model_hypnosis/)** — browse
+every measured cell: pick a model / cue / effect, hover any scatter point for its
+full prompt and P(y⁺), and zoom/pan the predicted-vs-measured plot. Rebuild it
+locally with `make explorer`.
 
 ## What's here
 
