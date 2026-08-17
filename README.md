@@ -124,9 +124,6 @@ Scripts that emit LaTeX (`example_prompts_figure.py`, `api_prompts_figure.py`,
 `appendix_pairs_figure.py`, `coef_prompts_figure.py`) write `.tex` fragments to
 `figures/` for `\input` into the manuscript.
 
-> The interaction-degree appendix (Boolean/Fourier analysis, Fig 37–41) was
-> produced by a separate notebook and is not included here.
-
 ## Data
 
 One release archive (`scripts/download_data.py`) holds every per-cell result,
