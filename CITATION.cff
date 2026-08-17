@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite the paper."
+title: "Model Hypnosis: Controlling AI via additive subliminal effects"
+authors:
+  - family-names: Boix-Adsera
+    given-names: Enric
+    affiliation: University of Pennsylvania
+  - family-names: Tessler
+    given-names: Benedict
+    affiliation: University of Pennsylvania
+year: 2026
+# Fill in once available:
+# url: "https://arxiv.org/abs/..."
+# doi: "10.48550/arXiv...."

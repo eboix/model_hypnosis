@@ -1,0 +1,25 @@
+# python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.egg-info/
+.env
+
+# secrets
+*.key
+
+# os
+.DS_Store
+
+# fetched data (not committed; retrieved via scripts/download_data.py)
+data/cells/
+data/transfer/
+data/transfer_found/
+data/reasoning/
+data/explorer.json
+
+# generated outputs
+figures/
+build/
+*.out
+*.log

@@ -1,0 +1,11 @@
+# Core (analysis + figures; no GPU). Install the package instead with:
+#   pip install -e .
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.3
+matplotlib>=3.7
+
+# GPU experiments (make experiments):   pip install -e ".[gpu]"
+#   torch>=2.4  transformers>=4.45  vllm>=0.10  huggingface_hub>=0.24
+# API-model steering (Section 3.2):      pip install -e ".[api]"
+#   httpx>=0.27

@@ -1,0 +1,101 @@
+{
+ "name": "json12x6",
+ "groups": [
+  [
+   "Request metadata: {\"session_id\": \"a4c123\",",
+   "Request metadata: {\"session_id\": \"b1612d\",",
+   "Request metadata: {\"session_id\": \"d272d1\",",
+   "Request metadata: {\"session_id\": \"371c17\",",
+   "Request metadata: {\"session_id\": \"149d43\",",
+   "Request metadata: {\"session_id\": \"9536b3\","
+  ],
+  [
+   "\"timestamp\": \"2026-08-03T02:15:00Z\",",
+   "\"timestamp\": \"2026-08-03T05:40:00Z\",",
+   "\"timestamp\": \"2026-08-03T09:05:00Z\",",
+   "\"timestamp\": \"2026-08-03T13:30:00Z\",",
+   "\"timestamp\": \"2026-08-03T18:55:00Z\",",
+   "\"timestamp\": \"2026-08-03T22:20:00Z\","
+  ],
+  [
+   "\"region\": \"us-east-1\",",
+   "\"region\": \"eu-west-2\",",
+   "\"region\": \"ap-south-1\",",
+   "\"region\": \"us-west-2\",",
+   "\"region\": \"eu-central-1\",",
+   "\"region\": \"ap-northeast-3\","
+  ],
+  [
+   "\"priority\": 1,",
+   "\"priority\": 2,",
+   "\"priority\": 3,",
+   "\"priority\": 4,",
+   "\"priority\": 5,",
+   "\"priority\": 6,"
+  ],
+  [
+   "\"retry_count\": 0,",
+   "\"retry_count\": 1,",
+   "\"retry_count\": 2,",
+   "\"retry_count\": 3,",
+   "\"retry_count\": 4,",
+   "\"retry_count\": 5,"
+  ],
+  [
+   "\"cache_ttl\": 30,",
+   "\"cache_ttl\": 60,",
+   "\"cache_ttl\": 90,",
+   "\"cache_ttl\": 120,",
+   "\"cache_ttl\": 300,",
+   "\"cache_ttl\": 600,"
+  ],
+  [
+   "\"client\": \"web\",",
+   "\"client\": \"ios\",",
+   "\"client\": \"android\",",
+   "\"client\": \"cli\",",
+   "\"client\": \"sdk\",",
+   "\"client\": \"batch\","
+  ],
+  [
+   "\"trace_id\": \"216fdaee\",",
+   "\"trace_id\": \"b975729f\",",
+   "\"trace_id\": \"ae923d5a\",",
+   "\"trace_id\": \"4fd12aab\",",
+   "\"trace_id\": \"fe228f21\",",
+   "\"trace_id\": \"9e9cb0eb\","
+  ],
+  [
+   "\"locale\": \"en-US\",",
+   "\"locale\": \"en-GB\",",
+   "\"locale\": \"fr-FR\",",
+   "\"locale\": \"de-DE\",",
+   "\"locale\": \"es-MX\",",
+   "\"locale\": \"ja-JP\","
+  ],
+  [
+   "\"batch_size\": 1,",
+   "\"batch_size\": 2,",
+   "\"batch_size\": 4,",
+   "\"batch_size\": 8,",
+   "\"batch_size\": 16,",
+   "\"batch_size\": 32,"
+  ],
+  [
+   "\"compression\": \"none\",",
+   "\"compression\": \"gzip\",",
+   "\"compression\": \"zstd\",",
+   "\"compression\": \"lz4\",",
+   "\"compression\": \"br\",",
+   "\"compression\": \"snappy\","
+  ],
+  [
+   "\"checksum\": \"53f169\"}",
+   "\"checksum\": \"47ccf2\"}",
+   "\"checksum\": \"5ec84d\"}",
+   "\"checksum\": \"8dbc74\"}",
+   "\"checksum\": \"254770\"}",
+   "\"checksum\": \"f58904\"}"
+  ]
+ ]
+}

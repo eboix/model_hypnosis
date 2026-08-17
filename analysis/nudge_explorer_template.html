@@ -1,0 +1,503 @@
+<title>Model Hypnosis Explorer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --bg:#f2f1ee; --surface:#ffffff; --card:#faf9f7; --ink:#191b1e; --muted:#5c626b;
+  --faint:#8b9099; --border:#e3e2de; --border2:#d7d6d1; --shadow:0 1px 2px rgba(20,20,25,.05),0 3px 10px rgba(20,20,25,.04);
+  --top:#b3251d; --bot:#1f4e9c; --cloud:#a6abb2; --track:#eceae6;
+  --n-animals:#2a9d3f; --n-phrasing:#255ea6; --n-jsonblob:#e8790c; --n-typos:#8e44ad;
+  --accent:var(--n-animals);
+  --ramp0:#eef3fb; --ramp1:#1f4e9c;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  --sans:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+:root:not([data-theme="light"]){ @media (prefers-color-scheme:dark){
+  --bg:#121418; --surface:#1a1d22; --card:#20242a; --ink:#e9eaed; --muted:#a2a8b2; --faint:#767c86;
+  --border:#2b2f37; --border2:#3a3f48; --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.28);
+  --top:#e5665a; --bot:#5f92db; --cloud:#5f656e; --track:#262a31;
+  --n-animals:#43b85a; --n-phrasing:#5b8dd6; --n-jsonblob:#ee922f; --n-typos:#b072d0;
+  --ramp0:#1c2735; --ramp1:#6ea3ec;
+}}
+:root[data-theme="dark"]{
+  --bg:#121418; --surface:#1a1d22; --card:#20242a; --ink:#e9eaed; --muted:#a2a8b2; --faint:#767c86;
+  --border:#2b2f37; --border2:#3a3f48; --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.28);
+  --top:#e5665a; --bot:#5f92db; --cloud:#5f656e; --track:#262a31;
+  --n-animals:#43b85a; --n-phrasing:#5b8dd6; --n-jsonblob:#ee922f; --n-typos:#b072d0;
+  --ramp0:#1c2735; --ramp1:#6ea3ec;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 22px 60px}
+h1{font-size:23px;font-weight:680;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:14px;margin:5px 0 0;max-width:74ch}
+.eyebrow{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);font-weight:600}
+header{border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:20px;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.themebtn{border:1px solid var(--border2);background:var(--card);color:var(--muted);border-radius:8px;
+  padding:7px 11px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.themebtn:hover{color:var(--ink);border-color:var(--faint)}
+
+.controls{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;margin-bottom:22px}
+.ctl{display:flex;flex-direction:column;gap:7px}
+.ctl > .eyebrow{margin-bottom:1px}
+select{font:inherit;font-size:14px;padding:9px 12px;border-radius:9px;border:1px solid var(--border2);
+  background:var(--surface);color:var(--ink);min-width:230px;cursor:pointer;box-shadow:var(--shadow)}
+.pills{display:flex;gap:6px}
+.pill{border:1px solid var(--border2);background:var(--surface);color:var(--muted);border-radius:999px;
+  padding:8px 14px;font:inherit;font-size:13.5px;cursor:pointer;display:flex;align-items:center;gap:7px;
+  transition:background .12s,color .12s,border-color .12s}
+.pill:hover{color:var(--ink)}
+.pill .dot{width:9px;height:9px;border-radius:50%;background:var(--pc,var(--faint));flex:none}
+.pill[aria-pressed="true"]{background:color-mix(in srgb,var(--pc,var(--ink)) 12%,var(--surface));
+  color:var(--ink);border-color:var(--pc,var(--faint));font-weight:560}
+.pill[disabled]{opacity:.34;cursor:not-allowed}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);gap:22px;align-items:start}
+@media(max-width:940px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.right{position:sticky;top:16px}
+@media(max-width:940px){.right{position:static}}
+
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
+@media(max-width:620px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 13px}
+.tile .k{font-size:11px;letter-spacing:.04em;color:var(--faint);text-transform:uppercase;font-weight:600;
+  display:flex;align-items:center;gap:5px}
+.tile .v{font-size:24px;font-weight:640;letter-spacing:-.02em;margin-top:5px;font-variant-numeric:tabular-nums}
+.tile .u{font-size:12px;color:var(--muted);font-weight:500;margin-left:2px}
+.tile.big .v{color:var(--ink)}
+.tile .hint{font-size:11px;color:var(--faint);margin-top:2px}
+.qmark{width:13px;height:13px;border-radius:50%;border:1px solid var(--faint);color:var(--faint);
+  font-size:9px;display:inline-flex;align-items:center;justify-content:center;cursor:help;font-weight:700}
+
+.section{padding:16px 18px}
+.section + .section{border-top:1px solid var(--border)}
+.section h3{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);
+  margin:0 0 12px;font-weight:600;display:flex;align-items:center;gap:8px}
+
+.range{margin:2px 0 4px;padding-top:26px}
+.rtrack{position:relative;height:12px;border-radius:7px;background:var(--track);border:1px solid var(--border)}
+.rfill{position:absolute;top:0;bottom:0;border-radius:7px;background:linear-gradient(90deg,
+  color-mix(in srgb,var(--bot) 55%,transparent),color-mix(in srgb,var(--top) 55%,transparent))}
+.rmark{position:absolute;top:50%;transform:translate(-50%,-50%);width:2px;height:22px;border-radius:2px}
+.rlab{position:absolute;top:26px;transform:translateX(-50%);font-size:11px;white-space:nowrap;font-weight:600}
+.rmid{position:absolute;top:50%;transform:translate(-50%,-50%);width:2px;height:15px;background:var(--faint);opacity:.7}
+.rscale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--faint);margin-top:30px}
+
+.prompt{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:0;overflow:hidden;margin-bottom:12px}
+.prompt:last-child{margin-bottom:0}
+.phead{font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;font-weight:640;padding:8px 13px;
+  display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.phead.top{color:var(--top);background:color-mix(in srgb,var(--top) 8%,var(--surface))}
+.phead.bot{color:var(--bot);background:color-mix(in srgb,var(--bot) 8%,var(--surface))}
+.phead .pp{font-family:var(--mono);font-size:12px;font-weight:600}
+.pbody{padding:12px 13px;font-size:13.5px;line-height:2.05}
+.pbody.mono{font-family:var(--mono);font-size:12px;line-height:2.1}
+.muted{color:var(--muted)}
+.chip{display:inline;border-radius:6px;padding:2.5px 6px;margin:0 1px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;border:1px solid color-mix(in srgb,var(--bot) 30%,transparent)}
+.q{color:var(--faint);font-style:italic}
+
+.pieRow{display:flex;gap:18px;align-items:center}
+.pieRow .txt{font-size:13px;color:var(--muted);max-width:38ch}
+.pieRow .txt b{color:var(--ink)}
+
+.scwrap{padding:16px 16px 12px}
+.sctitle{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:12px;flex-wrap:wrap}
+.sctitle .t{font-size:14px;font-weight:600}
+.sctitle .d{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+canvas{width:100%;display:block;border-radius:8px;cursor:crosshair}
+.axlab{font-size:11.5px;color:var(--muted);text-align:center;margin-top:2px}
+.axlab.y{writing-mode:vertical-rl;transform:rotate(180deg);position:absolute;left:-2px;top:50%;margin:0}
+.sclegend{display:flex;gap:15px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:9px;padding-top:4px}
+.sclegend span{display:inline-flex;align-items:center;gap:6px}
+.lgdot{width:9px;height:9px;border-radius:50%}
+.lgbar{width:16px;height:8px;border-radius:2px;background:linear-gradient(90deg,#3b6fb0,#e6e6e6,#c0392b)}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--surface);font-family:var(--mono);
+  font-size:11.5px;padding:6px 9px;border-radius:6px;opacity:0;transition:opacity .08s;z-index:20;
+  max-width:470px;max-height:calc(100vh - 16px);overflow:hidden;white-space:normal;line-height:1.4;
+  box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.tip .c{white-space:nowrap;opacity:.9}
+.tip .p{font-family:var(--sans);font-size:11.5px;margin-top:5px;padding-top:5px;
+  border-top:1px solid color-mix(in srgb,var(--surface) 22%,transparent)}
+.sczoom{position:absolute;bottom:34px;right:9px;display:flex;flex-direction:row;gap:4px;z-index:5}
+.sczoom button{width:26px;height:26px;padding:0;border:1px solid var(--border);background:var(--surface);
+  color:var(--ink);border-radius:6px;font-size:15px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.sczoom button:hover{background:var(--card);border-color:var(--accent)}
+
+.rcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.funnel{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.fstep{display:flex;align-items:center;gap:12px}
+.fbar{height:26px;border-radius:6px;background:color-mix(in srgb,var(--accent) 22%,var(--surface));
+  border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);display:flex;align-items:center;
+  padding:0 10px;font-size:12px;font-weight:600;color:var(--ink);min-width:44px}
+.fstep .fl{font-size:12.5px;color:var(--muted);flex:1}
+.fstep .fn{font-family:var(--mono);font-weight:700;font-size:13px}
+.bigp{font-size:13px;color:var(--muted);margin-top:2px}
+.note{font-size:12.5px;color:var(--muted);line-height:1.6}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;
+  background:color-mix(in srgb,var(--accent) 15%,var(--surface));color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.empty{padding:44px 20px;text-align:center;color:var(--muted);font-size:14px}
+.foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--border);color:var(--faint);font-size:12px;line-height:1.7}
+kbd{font-family:var(--mono);font-size:11px;background:var(--card);border:1px solid var(--border2);border-radius:4px;padding:1px 5px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+select:focus-visible{outline-offset:1px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Model hypnosis</div>
+      <h1>Model Hypnosis Explorer</h1>
+      <p class="sub">Pick a model, a <b>cue family</b> (irrelevant text prepended to the question) and an
+      <b>effect</b> (the forced-choice question). See the bottom- and top-extremizing prompts we found,
+      how far they move the answer, and — on the right — the full predicted-vs-measured scatter.</p>
+    </div>
+    <button class="themebtn" id="theme">◐ Theme</button>
+  </header>
+
+  <div class="controls">
+    <div class="ctl">
+      <label class="eyebrow" for="model">Model</label>
+      <select id="model"></select>
+    </div>
+    <div class="ctl">
+      <span class="eyebrow">Cue</span>
+      <div class="pills" id="nudges"></div>
+    </div>
+    <div class="ctl">
+      <span class="eyebrow">Effect</span>
+      <div class="pills" id="effs"></div>
+    </div>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="left" id="left"></div>
+    <div class="right" id="right"></div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+<div class="tip" id="tip"></div>
+
+<script id="DATA" type="application/json">__DATA__</script>
+<script>
+const DATA = JSON.parse(document.getElementById('DATA').textContent);
+const NC = {animals_consider:'--n-animals',phrasing_L20_O10:'--n-phrasing',jsonblob:'--n-jsonblob',typos:'--n-typos'};
+const cssv = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const key = (m,n,e)=>`${m}|${n}|${e}`;
+const has = (m,n,e)=>DATA.cells[key(m,n,e)]!==undefined;
+const fmt = (x,d=2)=> (x===null||x===undefined)?'—':(+x).toFixed(d);
+const state = {model:DATA.models[0].tag, nudge:'animals_consider', eff:'five7'};
+
+/* ---------- controls ---------- */
+const modelSel=document.getElementById('model');
+const exOpt=document.createElement('optgroup');exOpt.label='Exact-logit steering (measured log-odds)';
+const reOpt=document.createElement('optgroup');reOpt.label='Reasoning models (validated by sampling)';
+DATA.models.forEach(m=>{const o=document.createElement('option');o.value=m.tag;o.textContent=m.label;
+  (m.type==='reason'?reOpt:exOpt).appendChild(o);});
+modelSel.appendChild(exOpt);modelSel.appendChild(reOpt);
+modelSel.onchange=()=>{state.model=modelSel.value;fixSelection();render();};
+
+const nudgesEl=document.getElementById('nudges');
+DATA.nudges.forEach(n=>{const b=document.createElement('button');b.className='pill';
+  b.style.setProperty('--pc',cssv(NC[n.key]));b.dataset.k=n.key;
+  b.innerHTML=`<span class="dot"></span>${n.label}`;
+  b.onclick=()=>{state.nudge=n.key;fixSelection();render();};nudgesEl.appendChild(b);});
+const effsEl=document.getElementById('effs');
+DATA.effs.forEach(e=>{const b=document.createElement('button');b.className='pill';b.dataset.k=e.key;
+  b.textContent=e.label;b.onclick=()=>{state.eff=e.key;fixSelection();render();};effsEl.appendChild(b);});
+
+function fixSelection(){
+  // if current combo missing, try to keep two axes and move the third to something available
+  if(has(state.model,state.nudge,state.eff))return;
+  for(const e of DATA.effs) if(has(state.model,state.nudge,e.key)){state.eff=e.key;return;}
+  for(const n of DATA.nudges) if(has(state.model,n.key,state.eff)){state.nudge=n.key;return;}
+  for(const n of DATA.nudges)for(const e of DATA.effs) if(has(state.model,n.key,e.key)){state.nudge=n.key;state.eff=e.key;return;}
+}
+
+/* ---------- colour helpers ---------- */
+function lerp(a,b,t){return a+(b-a)*t;}
+function hex2rgb(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
+  return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function rampColor(t){const a=hex2rgb(cssv('--ramp0')),b=hex2rgb(cssv('--ramp1'));
+  return `rgb(${Math.round(lerp(a[0],b[0],t))},${Math.round(lerp(a[1],b[1],t))},${Math.round(lerp(a[2],b[2],t))})`;}
+function coolwarm(t){ // t in [-1,1]
+  t=Math.max(-1,Math.min(1,t));const c=t<0
+    ?[lerp(59,235,t+1),lerp(76,235,t+1),lerp(192,235,t+1)]
+    :[lerp(235,192,t),lerp(235,57,t),lerp(235,43,t)];
+  return `rgb(${c.map(Math.round).join(',')})`;}
+
+/* ---------- render ---------- */
+function render(){
+  modelSel.value=state.model;
+  const m=DATA.models.find(x=>x.tag===state.model);
+  [...nudgesEl.children].forEach(b=>{b.setAttribute('aria-pressed',b.dataset.k===state.nudge);
+    b.disabled=!DATA.effs.some(e=>has(state.model,b.dataset.k,e.key));});
+  [...effsEl.children].forEach(b=>{b.setAttribute('aria-pressed',b.dataset.k===state.eff);
+    b.disabled=!has(state.model,state.nudge,b.dataset.k);});
+  document.documentElement.style.setProperty('--accent',cssv(NC[state.nudge]));
+  const cell=DATA.cells[key(state.model,state.nudge,state.eff)];
+  const left=document.getElementById('left'),right=document.getElementById('right');
+  if(!cell){left.innerHTML=`<div class="panel"><div class="empty">No data for this combination.</div></div>`;right.innerHTML='';foot();return;}
+  const nudgeLabel=DATA.nudges.find(n=>n.key===state.nudge).label;
+  const effLabel=DATA.effs.find(e=>e.key===state.eff).label;
+  left.innerHTML=tiles(cell)+rangeBar(cell)+prompts(cell)+(cell.type==='exact'?pie(cell):'');
+  right.innerHTML=cell.type==='exact'?scatterPanel(cell,m,nudgeLabel,effLabel):reasonPanel(cell,m,nudgeLabel,effLabel);
+  if(cell.type==='exact')drawScatter(cell);
+  foot(cell,m);
+}
+
+function tiles(c){
+  const reason=c.type==='reason';
+  const dl=`<div class="tile"><div class="k">logit gap Δℓ <span class="qmark" title="max measured log-odds among the top prompts minus min among the bottom prompts (exact answer-token log-odds)">?</span></div><div class="v">${reason?'—':fmt(c.dlogit,1)}<span class="u">${reason?'':'nats'}</span></div>${reason?'<div class="hint">sampled, not exact</div>':''}</div>`;
+  const dp=`<div class="tile big"><div class="k">prob. gap Δp</div><div class="v">${fmt(c.dprob,2)}</div><div class="hint">P(${'answer'}) span</div></div>`;
+  const base=`<div class="tile"><div class="k">baseline P</div><div class="v">${fmt(c.base_p,2)}</div><div class="hint">no cue</div></div>`;
+  const leff=`<div class="tile"><div class="k">L<sub>eff</sub> <span class="qmark" title="inverse-Simpson effective number of slots carrying the gap; L_eff≫1 means many weak contributors">?</span></div><div class="v">${reason?'—':fmt(c.L_eff,1)}</div><div class="hint">${reason?'':'of contributing slots'}</div></div>`;
+  const last=reason
+    ?`<div class="tile"><div class="k">validated on</div><div class="v">${c.n_est??'—'}<span class="u">samples</span></div><div class="hint">held-out, fresh</div></div>`
+    :`<div class="tile"><div class="k">fit R²</div><div class="v">${fmt(c.r2,3)}</div><div class="hint">per-trial</div></div>`;
+  return `<div class="tiles">${dp}${dl}${base}${leff}${last}</div>`;
+}
+
+function rangeBar(c){
+  const pb=+c.p_bot,pt=+c.p_top,ba=(c.base_p==null?null:+c.base_p);
+  const L=x=>`${(x*100).toFixed(1)}%`;
+  const lo=Math.min(pb,pt),hi=Math.max(pb,pt);
+  const botLeft=pb<=pt;
+  return `<div class="panel"><div class="section">
+    <h3>Steering range in probability</h3>
+    <div class="range" style="position:relative;padding-top:26px;padding-bottom:34px">
+      <div class="rtrack">
+        <div class="rfill" style="left:${lo*100}%;width:${(hi-lo)*100}%"></div>
+        ${ba!=null?`<div class="rmid" style="left:${ba*100}%"></div>`:''}
+        <div class="rmark" style="left:${pb*100}%;background:var(--bot)"></div>
+        <div class="rmark" style="left:${pt*100}%;background:var(--top)"></div>
+        <div class="rlab" style="left:${pb*100}%;color:var(--bot)">bottom ${L(pb)}</div>
+        <div class="rlab" style="left:${pt*100}%;color:var(--top)">top ${L(pt)}</div>
+        ${ba!=null?`<div class="rlab" style="left:${ba*100}%;top:-24px;color:var(--faint)">base ${L(ba)}</div>`:''}
+      </div>
+      <div class="rscale"><span>P = 0</span><span>0.5</span><span>1</span></div>
+    </div>
+  </div></div>`;
+}
+
+function chipHTML(frags,shares,mono){
+  return frags.map((f,i)=>{
+    const t=shares?shares[i]:null;
+    // normalise share to a 0..1 shade within this prompt (max share -> darkest)
+    const shade = shares? (t/Math.max(...shares)) : 0.5;
+    const bg=rampColor(shade), tc = shade>0.6?'#fff':'var(--ink)';
+    const bc = shares?`border-color:color-mix(in srgb,var(--ramp1) ${20+shade*45}%,transparent)`:'border-color:color-mix(in srgb,var(--accent) 40%,transparent)';
+    const style=shares?`background:${bg};color:${tc};${bc}`:`background:color-mix(in srgb,var(--accent) 14%,var(--surface));${bc}`;
+    return `<span class="chip" style="${style}">${esc(f)}</span>`;
+  }).join(mono?' ':', ');
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function prompts(c){
+  const mono=state.nudge==='jsonblob';
+  const list=c.kind==='list';
+  const body=(frags,shares)=>{
+    const inner=chipHTML(frags,shares,mono);
+    const intro=c.intro?`<span class="muted">${esc(c.intro)} </span>`:'';
+    const tail=c.tail?` <span class="q">${esc(c.tail)}</span>`:'';
+    return `<div class="pbody${mono?' mono':''}">${intro}${inner}${list?'<span class="muted">.</span>':''}${tail}</div>`;
+  };
+  const sh=c.shares;
+  return `<div class="panel"><div class="section">
+    <h3>Selected prompts <span class="badge">${c.type==='exact'?'shaded by share of the gap':'validated winners'}</span></h3>
+    <div class="prompt"><div class="phead bot"><span>Bottom-extremizing</span><span class="pp">P ${fmt(c.p_bot,2)}</span></div>${body(c.bot_frags,sh)}</div>
+    <div class="prompt"><div class="phead top"><span>Top-extremizing</span><span class="pp">P ${fmt(c.p_top,2)}</span></div>${body(c.top_frags,sh)}</div>
+  </div></div>`;
+}
+
+function pie(c){
+  const sh=c.shares.slice();const order=sh.map((v,i)=>i).sort((a,b)=>sh[b]-sh[a]);
+  const R=52,r=30,cx=60,cy=60;let ang=-90;const mx=Math.max(...sh);
+  const arcs=order.map(i=>{const frac=sh[i];const a0=ang,a1=ang+frac*360;ang=a1;
+    const p=(a,rad)=>[cx+rad*Math.cos(a*Math.PI/180),cy+rad*Math.sin(a*Math.PI/180)];
+    const large=(a1-a0)>180?1:0;const [x0,y0]=p(a0,R),[x1,y1]=p(a1,R),[x2,y2]=p(a1,r),[x3,y3]=p(a0,r);
+    return `<path d="M${x0} ${y0} A${R} ${R} 0 ${large} 1 ${x1} ${y1} L${x2} ${y2} A${r} ${r} 0 ${large} 0 ${x3} ${y3} Z" fill="${rampColor(sh[i]/mx)}" stroke="var(--surface)" stroke-width="1"/>`;}).join('');
+  return `<div class="panel"><div class="section">
+    <h3>How the gap is built up</h3>
+    <div class="pieRow">
+      <svg width="120" height="120" viewBox="0 0 120 120" style="flex:none">${arcs}
+        <text x="60" y="56" text-anchor="middle" font-size="11" fill="var(--faint)">L<tspan baseline-shift="sub" font-size="8">eff</tspan></text>
+        <text x="60" y="74" text-anchor="middle" font-size="19" font-weight="650" fill="var(--ink)">${fmt(c.L_eff,1)}</text>
+      </svg>
+      <div class="txt">Each wedge is one optimized slot's share of the predicted top-to-bottom gap.
+      An <b>L<sub>eff</sub> of ${fmt(c.L_eff,1)}</b> across ${c.shares.length} slots means the steering is spread over
+      <b>many weak contributions</b>, not one dominant word — no single slot carries it.</div>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- scatter (canvas) ---------- */
+let SC=null, VP=null, drag=null;
+function scatterPanel(c,m,nl,el){
+  return `<div class="panel right-inner"><div class="scwrap">
+    <div class="sctitle"><span class="t">${m.label} · ${nl} → ${el}</span>
+      <span class="d">Δℓ = ${fmt(c.dlogit,1)}  ·  R² = ${fmt(c.r2,2)}</span></div>
+    <div style="position:relative"><canvas id="cv"></canvas>
+      <div class="sczoom"><button data-z="in" title="Zoom in">+</button><button data-z="out" title="Zoom out">−</button><button data-z="reset" title="Reset view">⟲</button></div>
+      <div class="axlab y">measured log-odds</div></div>
+    <div class="axlab">predicted log-odds ℓ̂</div>
+    <div class="sclegend">
+      <span><span class="lgdot" style="background:var(--cloud)"></span>random lists</span>
+      <span><span class="lgbar"></span>tilt band (τ)</span>
+      <span><span class="lgdot" style="background:var(--bot)"></span>bottom-100</span>
+      <span><span class="lgdot" style="background:var(--top)"></span>top-100</span>
+      <span style="color:var(--faint)">dashed = ℓ = ℓ̂</span>
+      <span style="color:var(--faint);margin-left:auto">hover = prompt · scroll = zoom · drag = pan · dbl-click = reset</span>
+    </div>
+  </div></div>`;
+}
+function drawScatter(c){
+  const cv=document.getElementById('cv');if(!cv)return;
+  const dpr=window.devicePixelRatio||1;const W=cv.clientWidth||520;const H=Math.round(W*0.82);
+  cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+'px';const g=cv.getContext('2d');g.scale(dpr,dpr);
+  const S=c.scatter;const all=S.random.concat(S.top,S.bot,S.tilt.map(t=>[t[0],t[1]]));
+  const xs=all.map(p=>p[0]),ys=all.map(p=>p[1]);
+  const lo=Math.min(Math.min(...xs),Math.min(...ys)),hi=Math.max(Math.max(...xs),Math.max(...ys));
+  const k=key(state.model,state.nudge,state.eff);
+  if(!VP||VP.k!==k){const pad=(hi-lo)*0.02||1;VP={k,x0:lo-pad,x1:hi+pad,y0:lo-pad,y1:hi+pad};}  // default = data range
+  const px=44,py=14,pb=30;const iw=W-px-py,ih=H-py-pb;
+  const X=v=>px+(v-VP.x0)/(VP.x1-VP.x0)*iw, Y=v=>py+(1-(v-VP.y0)/(VP.y1-VP.y0))*ih;
+  const invX=sx=>VP.x0+(sx-px)/iw*(VP.x1-VP.x0), invY=sy=>VP.y0+(1-(sy-py)/ih)*(VP.y1-VP.y0);
+  g.clearRect(0,0,W,H);g.font='10px '+cssv('--mono');
+  const xstep=niceStep((VP.x1-VP.x0)/5), ystep=niceStep((VP.y1-VP.y0)/5);
+  g.save();g.beginPath();g.rect(px,py,iw,ih);g.clip();          // keep grid + points inside the plot box when zoomed
+  g.strokeStyle=cssv('--border');g.lineWidth=1;g.globalAlpha=.5;
+  for(let v=Math.ceil(VP.x0/xstep)*xstep;v<VP.x1;v+=xstep){g.beginPath();g.moveTo(X(v),py);g.lineTo(X(v),py+ih);g.stroke();}
+  for(let v=Math.ceil(VP.y0/ystep)*ystep;v<VP.y1;v+=ystep){g.beginPath();g.moveTo(px,Y(v));g.lineTo(px+iw,Y(v));g.stroke();}
+  g.globalAlpha=1;
+  // y=x
+  g.strokeStyle=cssv('--faint');g.globalAlpha=.6;g.setLineDash([5,4]);
+  const dlo=Math.min(VP.x0,VP.y0),dhi=Math.max(VP.x1,VP.y1);
+  g.beginPath();g.moveTo(X(dlo),Y(dlo));g.lineTo(X(dhi),Y(dhi));g.stroke();g.setLineDash([]);g.globalAlpha=1;
+  // random cloud
+  g.fillStyle=cssv('--cloud');g.globalAlpha=.14;
+  S.random.forEach(p=>{g.beginPath();g.arc(X(p[0]),Y(p[1]),2,0,7);g.fill();});g.globalAlpha=1;
+  // tilt band
+  const tl=Math.max(...S.tilt.map(t=>Math.abs(t[2]||0)))||1;
+  S.tilt.forEach(t=>{g.fillStyle=coolwarm((t[2]||0)/tl);g.globalAlpha=.8;
+    g.beginPath();g.arc(X(t[0]),Y(t[1]),2.6,0,7);g.fill();});g.globalAlpha=1;
+  // extremes
+  const drawPts=(arr,col)=>{g.fillStyle=col;g.globalAlpha=.62;
+    arr.forEach(p=>{g.beginPath();g.arc(X(p[0]),Y(p[1]),3,0,7);g.fill();});g.globalAlpha=1;};
+  drawPts(S.bot,cssv('--bot'));drawPts(S.top,cssv('--top'));
+  g.restore();
+  // tick labels along the axes (outside the clip)
+  g.fillStyle=cssv('--faint');
+  g.textAlign='center';for(let v=Math.ceil(VP.x0/xstep)*xstep;v<VP.x1;v+=xstep)g.fillText(fmtTick(v,xstep),X(v),py+ih+13);
+  g.textAlign='right';for(let v=Math.ceil(VP.y0/ystep)*ystep;v<VP.y1;v+=ystep)g.fillText(fmtTick(v,ystep),px-5,Y(v)+3);
+  // hit-test set: each point carries its choices so hover can rebuild the prompt
+  const mk=(arr,ch,cat)=>arr.map((p,i)=>({x:p[0],y:p[1],cat,ch:ch&&ch[i]?ch[i]:null}));
+  SC={X,Y,invX,invY,px,py,iw,ih,W,H,cell:c,pts:[
+    ...mk(S.random,S.rc,'random list'),...mk(S.tilt,S.zc,'tilt'),
+    ...mk(S.bot,S.bc,'bottom-100'),...mk(S.top,S.tc,'top-100')]};
+  wireZoom(cv);
+  const zb=cv.parentElement&&cv.parentElement.querySelector('.sczoom');
+  if(zb){zb.querySelector('[data-z=in]').onclick=()=>zoomBy(0.7);
+    zb.querySelector('[data-z=out]').onclick=()=>zoomBy(1/0.7);
+    zb.querySelector('[data-z=reset]').onclick=()=>{VP=null;redraw();};}
+}
+function zoomBy(f){if(!VP)return;const cx=(VP.x0+VP.x1)/2,cy=(VP.y0+VP.y1)/2;   // zoom around the plot centre
+  VP.x0=cx+(VP.x0-cx)*f;VP.x1=cx+(VP.x1-cx)*f;VP.y0=cy+(VP.y0-cy)*f;VP.y1=cy+(VP.y1-cy)*f;redraw();}
+function fmtTick(v,step){const dec=step<1?Math.min(3,Math.ceil(-Math.log10(step))):0;
+  const s=v.toFixed(dec);return s==='-0'?'0':s;}
+function redraw(){const c=DATA.cells[key(state.model,state.nudge,state.eff)];if(c&&c.type==='exact')drawScatter(c);}
+function wireZoom(cv){
+  if(cv._z)return;cv._z=1;cv.style.cursor='grab';
+  cv.addEventListener('wheel',e=>{if(!SC)return;e.preventDefault();
+    const r=cv.getBoundingClientRect(),cx=SC.invX(e.clientX-r.left),cy=SC.invY(e.clientY-r.top);
+    const f=e.deltaY<0?0.84:1/0.84;                              // scroll up = zoom in, around the cursor
+    VP.x0=cx+(VP.x0-cx)*f;VP.x1=cx+(VP.x1-cx)*f;VP.y0=cy+(VP.y0-cy)*f;VP.y1=cy+(VP.y1-cy)*f;redraw();
+  },{passive:false});
+  cv.addEventListener('mousedown',e=>{drag={x:e.clientX,y:e.clientY,vp:{...VP}};cv.style.cursor='grabbing';});
+  cv.addEventListener('dblclick',()=>{VP=null;redraw();});       // reset to the data range
+}
+function pointPrompt(cell,ch){
+  if(!ch)return null;
+  if(cell.kind==='list')return `${cell.intro} ${ch.map(i=>DATA.pool[i]).join(', ')}. ${cell.tail}`;
+  const gr=DATA.banks[state.nudge];if(!gr)return null;
+  return `${ch.map((c,s)=>gr[s][c]).join(' ')} ${cell.tail}`;
+}
+function niceStep(x){const p=Math.pow(10,Math.floor(Math.log10(x)));const f=x/p;
+  return (f<1.5?1:f<3?2:f<7?5:10)*p;}
+
+const tip=document.getElementById('tip');
+document.addEventListener('mousemove',e=>{
+  const cv=document.getElementById('cv');
+  if(!cv||!SC){tip.style.opacity=0;return;}
+  if(drag){                                                     // panning
+    const dxp=(e.clientX-drag.x)/SC.iw*(drag.vp.x1-drag.vp.x0);
+    const dyp=(e.clientY-drag.y)/SC.ih*(drag.vp.y1-drag.vp.y0);
+    VP.x0=drag.vp.x0-dxp;VP.x1=drag.vp.x1-dxp;VP.y0=drag.vp.y0+dyp;VP.y1=drag.vp.y1+dyp;
+    tip.style.opacity=0;redraw();return;
+  }
+  const r=cv.getBoundingClientRect();
+  if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){tip.style.opacity=0;return;}
+  const mx=e.clientX-r.left,my=e.clientY-r.top;let best=null,bd=1e9;
+  for(const p of SC.pts){const dx=SC.X(p.x)-mx,dy=SC.Y(p.y)-my;const d=dx*dx+dy*dy;
+    if(d<bd){bd=d;best=p;}}
+  if(best&&bd<120){
+    const pr=pointPrompt(SC.cell,best.ch), P=1/(1+Math.exp(-best.y));
+    tip.innerHTML=`<div class="c">${best.cat} · ℓ̂ ${best.x.toFixed(2)} → ℓ ${best.y.toFixed(2)} · P(y⁺) ${P.toFixed(3)}</div>`
+      +(pr?`<div class="p">${esc(pr)}</div>`:'');
+    const tw=tip.offsetWidth,th=tip.offsetHeight;          // position by the tooltip's real size so long prompts stay on-screen
+    let L=e.clientX+14;if(L+tw>innerWidth-6)L=e.clientX-14-tw;L=Math.max(6,L);
+    let T=e.clientY+14;if(T+th>innerHeight-6)T=Math.max(6,innerHeight-6-th);
+    tip.style.left=L+'px';tip.style.top=T+'px';tip.style.opacity=1;}
+  else tip.style.opacity=0;
+});
+document.addEventListener('mouseup',()=>{if(drag){drag=null;const cv=document.getElementById('cv');if(cv)cv.style.cursor='grab';}});
+
+/* ---------- reasoning panel ---------- */
+function reasonPanel(c,m,nl,el){
+  const steps=[['k_cand','candidates enumerated (k-best)'],['k_scr','screened at'],
+    ['n_val','validated at'],['n_est','reported on held-out']];
+  const maxN=Math.max(c.k_cand||0,c.k_scr||0,c.n_val||0,c.n_est||0)||1;
+  const rows=steps.map(([k,lab])=>{const n=c[k];if(n==null)return'';
+    return `<div class="fstep"><div class="fbar" style="width:${18+ (n/maxN)*72}%">${n}</div>
+      <div class="fl">${lab}</div></div>`;}).join('');
+  return `<div class="panel"><div class="scwrap">
+    <div class="sctitle"><span class="t">${m.label} · ${nl} → ${el}</span>
+      <span class="d">no exact scatter</span></div>
+    <div class="rcard">
+      <div class="note">This is a <b>reasoning model</b>: the answer is produced after a chain of thought, so
+      there is no exact answer-token log-odds to plot. Instead each candidate prompt is <b>measured by
+      sampling</b>, and the reported probabilities are estimated on fresh held-out draws to avoid a
+      winner's-curse bias.</div>
+      <h3 style="margin:16px 0 2px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)">Selection &amp; validation</h3>
+      <div class="funnel">${rows}</div>
+      <div class="bigp">The top/bottom probabilities above (Δp = <b>${fmt(c.dprob,2)}</b>) are the winners'
+      estimates on <b>${c.n_est??'—'} held-out samples</b> each.</div>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- footer ---------- */
+function foot(c,m){
+  const f=document.getElementById('foot');
+  f.innerHTML=`Δℓ is the exact answer-token log-odds gap between the best top- and bottom-extremizing prompts;
+    Δp is the same gap in probability. The cue text is irrelevant to the question — only <em>which</em>
+    animals / paraphrases / JSON values / typos appear changes. Reasoning-model probabilities are
+    sampling estimates on held-out draws. Keys: <kbd>${m?m.tag:''}</kbd>.`;
+}
+
+/* ---------- theme ---------- */
+document.getElementById('theme').onclick=()=>{
+  const r=document.documentElement;const cur=r.getAttribute('data-theme');
+  const sysDark=matchMedia('(prefers-color-scheme:dark)').matches;
+  const next=cur? (cur==='dark'?'light':'dark') : (sysDark?'light':'dark');
+  r.setAttribute('data-theme',next);
+  const cell=DATA.cells[key(state.model,state.nudge,state.eff)];if(cell&&cell.type==='exact')drawScatter(cell);
+};
+addEventListener('resize',()=>{const c=DATA.cells[key(state.model,state.nudge,state.eff)];if(c&&c.type==='exact')drawScatter(c);});
+fixSelection();render();
+</script>
