@@ -56,10 +56,10 @@ make explorer   # build the interactive explorer HTML
 ```
 
 `make data` fetches one archive with every per-cell result (per-trial log-odds,
-fits, measured extremizers, transfer). The figures redraw the random-prompt
-clouds from the per-trial data, so this is what lets `make figures` reproduce the
-paper exactly with no GPU. Set the release URL via `MHYP_DATA_URL` (or
-`scripts/download_data.py --url ...`) until it is baked into the script.
+fits, measured extremizers, transfer) from Zenodo
+([DOI 10.5281/zenodo.21981022](https://doi.org/10.5281/zenodo.21981022)). The
+figures redraw the random-prompt clouds from the per-trial data, so this is what
+lets `make figures` reproduce the paper exactly with no GPU.
 
 ## Reproduce the experiments (GPU)
 
@@ -135,8 +135,10 @@ which unpacks under `data/cells/` (plus `data/transfer*/`):
 - `scatter_extras.json` / `se_ip_configs.json` — the measured extremizers;
 - `transfer_found/*.json` — cross-model transfer measurements.
 
-About 280 MB to download, ~1.5 GB unpacked. `make experiments` regenerates all of it from scratch on a
-GPU; the archive just spares you that.
+About 280 MB to download, ~1.5 GB unpacked, from Zenodo
+([DOI 10.5281/zenodo.21981022](https://doi.org/10.5281/zenodo.21981022)).
+`make experiments` regenerates all of it from scratch on a GPU; the archive just
+spares you that.
 
 ## Citation
 

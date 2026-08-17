@@ -23,8 +23,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-ARCHIVE_URL = os.environ.get("MHYP_DATA_URL", "")   # fill in after the release upload
-ARCHIVE_SHA256 = ""                                  # optional integrity check
+# Zenodo record 21981022 (DOI 10.5281/zenodo.21981022); MHYP_DATA_URL overrides.
+ARCHIVE_URL = os.environ.get(
+    "MHYP_DATA_URL",
+    "https://zenodo.org/records/21981022/files/mhyp-data.tar.gz?download=1")
+ARCHIVE_SHA256 = "e545fc93966556aaef41501000b7d1480c27491bdc4298b4233158453f83464e"
 
 
 def _download(url: str, dest: Path) -> None:
