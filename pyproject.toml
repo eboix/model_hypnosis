@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "model-hypnosis"
 version = "0.1.0"
-description = "Model Hypnosis: controlling AI via additive subliminal cue effects"
+description = "Model Hypnosis: strong control of AI via additive subliminal cue effects"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

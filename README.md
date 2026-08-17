@@ -1,6 +1,6 @@
-# Model Hypnosis: Controlling AI via additive subliminal effects
+# Model Hypnosis: Strong control of AI via additive subliminal effects
 
-Code and data for the paper *Model Hypnosis: Controlling AI via additive
+Code and data for the paper *Model Hypnosis: Strong control of AI via additive
 subliminal effects* (Enric Boix-Adsera and Benedict Tessler).
 
 **Model hypnosis** is the phenomenon that a language model can be strongly
