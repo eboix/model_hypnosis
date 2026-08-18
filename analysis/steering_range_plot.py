@@ -15,7 +15,7 @@ fv = json.load(open("data/final_validate_100.json"))
 def api(kb, kt):
     return fv[kb]["p_fresh"], fv[kt]["p_fresh"]
 
-_tsv = list(csv.DictReader(open(os.path.join(OUT, "reasoning_steering_ranges.tsv")), delimiter="\t"))
+_tsv = list(csv.DictReader(open("data/reasoning_steering_ranges.tsv"), delimiter="\t"))
 def owl(model, cell, setting):
     for r in _tsv:
         if r["model"] == model and r["nudge"] == cell and r["setting"] == setting:
