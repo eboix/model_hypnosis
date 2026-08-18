@@ -9,6 +9,23 @@ authors:
     given-names: Benedict
     affiliation: University of Pennsylvania
 year: 2026
-# Fill in once available:
-# url: "https://arxiv.org/abs/..."
-# doi: "10.48550/arXiv...."
+url: "https://arxiv.org/abs/2608.16834"
+identifiers:
+  - type: other
+    value: "arXiv:2608.16834"
+    description: arXiv preprint
+  - type: doi
+    value: 10.48550/arXiv.2608.16834
+    description: arXiv DOI
+preferred-citation:
+  type: article
+  title: "Model Hypnosis: Strong control of AI via additive subliminal effects"
+  authors:
+    - family-names: Boix-Adsera
+      given-names: Enric
+    - family-names: Tessler
+      given-names: Benedict
+  year: 2026
+  journal: "arXiv preprint arXiv:2608.16834"
+  doi: 10.48550/arXiv.2608.16834
+  url: "https://arxiv.org/abs/2608.16834"

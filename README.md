@@ -1,7 +1,10 @@
 # Model Hypnosis: Strong control of AI via additive subliminal effects
 
-Code and data for the paper *Model Hypnosis: Strong control of AI via additive
-subliminal effects* (Enric Boix-Adsera and Benedict Tessler).
+[![arXiv](https://img.shields.io/badge/arXiv-2608.16834-b31b1b.svg)](https://arxiv.org/abs/2608.16834)
+
+Code and data for the paper
+[*Model Hypnosis: Strong control of AI via additive subliminal effects*](https://arxiv.org/abs/2608.16834)
+(Enric Boix-Adsera and Benedict Tessler).
 
 **Model hypnosis** is the phenomenon that a language model can be strongly
 steered by the *additive* effect of many individually weak, semantically
@@ -144,4 +147,5 @@ spares you that.
 
 ## Citation
 
-See `CITATION.cff`. Licensed under the MIT License (`LICENSE`).
+Paper: [arXiv:2608.16834](https://arxiv.org/abs/2608.16834). Citation metadata in
+`CITATION.cff`. Licensed under the MIT License (`LICENSE`).
