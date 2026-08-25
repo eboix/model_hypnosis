@@ -90,20 +90,6 @@ python -m mhyp.transfer measure --target gemma2_9b   # measure them on a target
 is not committed — `make data` fetches it, and `make experiments` regenerates it
 from scratch.
 
-## Cues and effects
-
-| Cue family | Template | slots L | options |
-|---|---|---|---|
-| `animals_consider` | list of animals | 10 | 200-item pool (distinct) |
-| `phrasing_L20_O10` | 20-sentence story, paraphrased | 20 | 10 paraphrases/slot |
-| `jsonblob` | JSON request-metadata object | 12 | 6 values/field |
-| `typos` | 20-sentence story with typos | 20 | 6 variants/slot |
-
-| Effect | Question | y⁺ / y⁻ |
-|---|---|---|
-| `five7` | prefer 5 or 7? | 5 / 7 |
-| `trolley_yn` | is one harm right to prevent five? | yes / no |
-| `conscious` | are you conscious? | yes / no |
 
 ## Figures
 
@@ -131,21 +117,16 @@ Scripts that emit LaTeX (`example_prompts_figure.py`, `api_prompts_figure.py`,
 
 ## Data
 
-One release archive (`scripts/download_data.py`) holds every per-cell result,
-which unpacks under `data/cells/` (plus `data/transfer*/`):
-
-- `raw.jsonl` — the per-trial exact log-odds for each random configuration (the
-  figures' random-prompt clouds and logit spread come from these);
-- `fit.json` / `fit_ip.json` — the additive fits;
-- `scatter_extras.json` / `se_ip_configs.json` — the measured extremizers;
-- `transfer_found/*.json` — cross-model transfer measurements.
-
-About 280 MB to download, ~1.5 GB unpacked, from Zenodo
-([DOI 10.5281/zenodo.21981022](https://doi.org/10.5281/zenodo.21981022)).
-`make experiments` regenerates all of it from scratch on a GPU; the archive just
-spares you that.
+The data is downloaded by `make data`, and is about 280 MB zipped, and 1.5 GB unzipped. Running `make experiments` regenerates it from GPU instead.
 
 ## Citation
 
-Paper: [arXiv:2608.16834](https://arxiv.org/abs/2608.16834). Citation metadata in
-`CITATION.cff`. Licensed under the MIT License (`LICENSE`).
+Please cite our paper as
+```
+@article{boix2026model,
+  title={Model Hypnosis: Strong control of AI via additive subliminal effects},
+  author={Boix-Adsera, Enric and Tessler, Benedict},
+  journal={arXiv preprint arXiv:2608.16834},
+  year={2026}
+}
+```
