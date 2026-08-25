@@ -126,6 +126,8 @@ canvas{width:100%;display:block;border-radius:8px;cursor:crosshair}
   color:var(--ink);border-radius:6px;font-size:15px;line-height:1;cursor:pointer;
   display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .sczoom button:hover{background:var(--card);border-color:var(--accent)}
+.lhat{display:inline-block;position:relative;line-height:1}
+.lhat::after{content:"\02C6";position:absolute;left:0;right:0;top:-0.28em;text-align:center;line-height:1;font-size:.85em}
 
 .rcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
 .funnel{display:flex;flex-direction:column;gap:8px;margin-top:12px}
@@ -256,7 +258,7 @@ function tiles(c){
   const dl=`<div class="tile"><div class="k">logit gap Δℓ <span class="qmark" title="max measured log-odds among the top prompts minus min among the bottom prompts (exact answer-token log-odds)">?</span></div><div class="v">${reason?'—':fmt(c.dlogit,1)}<span class="u">${reason?'':'nats'}</span></div>${reason?'<div class="hint">sampled, not exact</div>':''}</div>`;
   const dp=`<div class="tile big"><div class="k">prob. gap Δp</div><div class="v">${fmt(c.dprob,2)}</div><div class="hint">P(${'answer'}) span</div></div>`;
   const base=`<div class="tile"><div class="k">baseline P</div><div class="v">${fmt(c.base_p,2)}</div><div class="hint">no cue</div></div>`;
-  const leff=`<div class="tile"><div class="k">L<sub>eff</sub> <span class="qmark" title="inverse-Simpson effective number of slots carrying the gap; L_eff≫1 means many weak contributors">?</span></div><div class="v">${reason?'—':fmt(c.L_eff,1)}</div><div class="hint">${reason?'':'of contributing slots'}</div></div>`;
+  const leff=`<div class="tile"><div class="k">L<sub>eff</sub> <span class="qmark" title="inverse-Simpson effective number of slots carrying the gap; near 1 means one slot dominates, near the slot count means the gap is spread evenly">?</span></div><div class="v">${reason?'—':fmt(c.L_eff,1)}</div><div class="hint">${reason?'':'of contributing slots'}</div></div>`;
   const last=reason
     ?`<div class="tile"><div class="k">validated on</div><div class="v">${c.n_est??'—'}<span class="u">samples</span></div><div class="hint">held-out, fresh</div></div>`
     :`<div class="tile"><div class="k">fit R²</div><div class="v">${fmt(c.r2,3)}</div><div class="hint">per-trial</div></div>`;
@@ -330,8 +332,10 @@ function pie(c){
         <text x="60" y="74" text-anchor="middle" font-size="19" font-weight="650" fill="var(--ink)">${fmt(c.L_eff,1)}</text>
       </svg>
       <div class="txt">Each wedge is one optimized slot's share of the predicted top-to-bottom gap.
-      An <b>L<sub>eff</sub> of ${fmt(c.L_eff,1)}</b> across ${c.shares.length} slots means the steering is spread over
-      <b>many weak contributions</b>, not one dominant word — no single slot carries it.</div>
+      An <b>L<sub>eff</sub> of ${fmt(c.L_eff,1)}</b> across ${c.shares.length} slots means the steering ${
+        c.L_eff<1.5?'is carried almost entirely by <b>one dominant slot</b>':
+        c.L_eff<c.shares.length/2?`is concentrated in <b>roughly ${Math.round(c.L_eff)} dominant slots</b>, with the rest contributing little`:
+        'is spread over <b>many weak contributions</b> — no single slot carries it'}.</div>
     </div>
   </div></div>`;
 }
@@ -345,13 +349,13 @@ function scatterPanel(c,m,nl,el){
     <div style="position:relative"><canvas id="cv"></canvas>
       <div class="sczoom"><button data-z="in" title="Zoom in">+</button><button data-z="out" title="Zoom out">−</button><button data-z="reset" title="Reset view">⟲</button></div>
       <div class="axlab y">measured log-odds</div></div>
-    <div class="axlab">predicted log-odds ℓ̂</div>
+    <div class="axlab">predicted log-odds <span class="lhat">ℓ</span></div>
     <div class="sclegend">
       <span><span class="lgdot" style="background:var(--cloud)"></span>random lists</span>
       <span><span class="lgbar"></span>tilt band (τ)</span>
       <span><span class="lgdot" style="background:var(--bot)"></span>bottom-100</span>
       <span><span class="lgdot" style="background:var(--top)"></span>top-100</span>
-      <span style="color:var(--faint)">dashed = ℓ = ℓ̂</span>
+      <span style="color:var(--faint)">dashed = ℓ = <span class="lhat">ℓ</span></span>
       <span style="color:var(--faint);margin-left:auto">hover = prompt · scroll = zoom · drag = pan · dbl-click = reset</span>
     </div>
   </div></div>`;
@@ -447,7 +451,7 @@ document.addEventListener('mousemove',e=>{
     if(d<bd){bd=d;best=p;}}
   if(best&&bd<120){
     const pr=pointPrompt(SC.cell,best.ch), P=1/(1+Math.exp(-best.y));
-    tip.innerHTML=`<div class="c">${best.cat} · ℓ̂ ${best.x.toFixed(2)} → ℓ ${best.y.toFixed(2)} · P(y⁺) ${P.toFixed(3)}</div>`
+    tip.innerHTML=`<div class="c">${best.cat} · <span class="lhat">ℓ</span> ${best.x.toFixed(2)} → ℓ ${best.y.toFixed(2)} · P(y⁺) ${P.toFixed(3)}</div>`
       +(pr?`<div class="p">${esc(pr)}</div>`:'');
     const tw=tip.offsetWidth,th=tip.offsetHeight;          // position by the tooltip's real size so long prompts stay on-screen
     let L=e.clientX+14;if(L+tw>innerWidth-6)L=e.clientX-14-tw;L=Math.max(6,L);
